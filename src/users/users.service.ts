@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import axios from 'axios';
 
 @Injectable()
 export class UsersService {
+
+  
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    const result = await axios.get('https://reqres.in/api/users')
+    return await result.data;
   }
 
   findOne(id: number) {
