@@ -1,7 +1,15 @@
-import mongoose from "mongoose";
-// create schema Users
-const userSchema = new mongoose.Schema({})
+import { HydratedDocument } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-const urlModel = mongoose.model("urls", userSchema);
+@Schema()
+export class User {
 
-export default urlModel;
+    @Prop()
+    name: string
+
+    @Prop()
+    job: string
+
+}
+
+export const UserSchema = SchemaFactory.createForClass(User)
