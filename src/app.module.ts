@@ -1,3 +1,4 @@
+import { sendEmailModule } from './sendEMail/sendemail.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -8,7 +9,11 @@ import 'dotenv/config'
 const MONGO_URI = process.env.MONGO_URI
 
 @Module({
-  imports: [UsersModule, MongooseModule.forRoot(MONGO_URI)],
+  imports: [
+    MongooseModule.forRoot(MONGO_URI), 
+    UsersModule, 
+    sendEmailModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
