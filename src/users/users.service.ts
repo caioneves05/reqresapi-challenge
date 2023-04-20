@@ -10,11 +10,10 @@ import axios from 'axios';
 @Injectable()
 export class UsersService {
 
-  constructor(@InjectModel(User.name) private userModel: Model<User>, @InjectModel() private readonly serviceEmail: ) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async create(user: CreateUserDto): Promise<User> {
     const createUser = await this.userModel.create(user)
-    this.serviceEmail.sendEMail(createUser.email)
     return createUser.save()
   }
 

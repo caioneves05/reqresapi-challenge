@@ -1,25 +1,18 @@
+import { MailerService } from "@nestjs-modules/mailer";
 import { Injectable } from "@nestjs/common";
-import  * as nodemailer  from 'nodemailer';
-import { sendEmailTransporter } from "./sendemail.config";
-import { error } from "console";
+import 'dotenv/config'
 
 @Injectable()
-export class ServiceEmail {
+export class emailService {
 
-    async Email(email: string,) {
-        const mailOPtions = {
+    constructor(private maillerSErvice: MailerService) {}
+
+    async Email(email: string) {
+        await this.maillerSErvice.sendMail({
             from: process.env.EMAIL_GMAIL,
             to: email,
             subject: 'Create user.',
-            text: 'A new user has been created in the database.'
-        }
-
-        sendEmailTransporter.sendEMail(mailOPtions, (error, res) => {
-            if(error) {
-                console.log(error)
-            }else {
-                console.log(`Email enviado: ${res.Response}`)
-            }
+            html: '<h3> A new user has been created in the database. </h3>'
         })
     }
 }
