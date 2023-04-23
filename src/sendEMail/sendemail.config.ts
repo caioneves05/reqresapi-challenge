@@ -1,17 +1,15 @@
-/*
-import * as nodemailer from 'nodemailer';
-import { MailerService, Message, createTransport, getTestMessageUrl } from 'mailer';
-
+/* import * as nodemailer from 'nodemailer';
 import 'dotenv/config'
 
 export const sendEmailTransporter = nodemailer.createTransport({
-    pool: true,
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: false, // upgrade later with STARTTLS
-    auth: {
-        user: process.env.EMAIL_GMAIL,
-        pass: process.env.PASSWORD_GMAIL
-    }
+    host: 'smtp.mailgun.org', //host smtp
+    secure: true, //regras de segurança do serviço smtp
+    port: 587, // porta
+    auth: { //dados do usuário e senha
+        user: process.env.USERNAME_MAILGUN,
+        pass: process.env.PASSWORD_MAILGUN,
+    },
+    ignoreTLS: true,
   })
-  */
+
+*/

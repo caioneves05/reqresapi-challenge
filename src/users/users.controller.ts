@@ -1,19 +1,38 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Inject } from '@nestjs/common';
+import { Response } from 'express';
+import { Controller, 
+  Get, 
+  Post, 
+  Body, 
+  Patch, 
+  Param, 
+  Delete, 
+  Res,
+  Inject
+ } from '@nestjs/common';
+
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
+
 import { emailService } from 'src/sendEMail/sendemail.service';
+import { MailerService } from '@nestjs-modules/mailer';
+
+
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService,private readonly mailService: MailerService) {}
 
   @Post()
-  async create(@Body() userCreate: CreateUserDto, @Res() res: Response, @Inject() emailService: emailService) {
+  async create(@Body() userCreate: CreateUserDto, @Res() res: Response) {
     const user = await this.usersService.create(userCreate)
-    await  emailService.Email(user.email)
-    return res.json({userCreated: `${user}` })
+    await this.mailService.sendMail({
+      to: user.email,
+      from: 'Caio Neves test',
+      subject: 'Sending Email with NestJS.',
+      html: 'Test completed successfully.',
+    })
+    res.json({sendEmailUser: `${user.email}`})
   }
 
   @Get()
