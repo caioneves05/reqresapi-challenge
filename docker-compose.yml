@@ -1,0 +1,44 @@
+version: '3.7'
+services:
+  mongodb_container:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 
+      MONGO_INITDB_ROOT_PASSWORD:
+    ports:
+      - 27018:27017
+    volumes:
+      - mongodb_data_container:/data/db
+
+  mvpnode:
+    image: node:18.1.0
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/app
+    command: sh -c "cd /app && npm install && npm run start:dev"
+    depends_on:
+      - mongodb_container
+
+  rabbitmq3:
+    image: rabbitmq:3.8-management-alpine
+    container_name: "rabbitmq"
+    restart: always
+    environment:
+       - "RABBITMQ_DEFAULT_USER=username"
+       - "RABBITMQ_DEFAULT_PASS=password"
+    ports:
+       # AMQP protocol port
+       - '5672:5672'
+       # HTTP management UI
+       - '15672:15672'
+    networks:
+       - rabbitmq_go_net
+
+networks:
+      rabbitmq_go_net:
+        driver: bridge
+
+
+volumes:
+  mongodb_data_container:

@@ -32,7 +32,7 @@ export class UsersController {
       html: 'Test completed successfully.',
     })
     
-    res.json({sendEmailUser: `${user.email}`})
+    res.json({sendEmailUser: user.email})
   }
 
   @Get()
@@ -56,7 +56,8 @@ export class UsersController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  remove(@Param('id') id: string, res: Response ) {
+    this.usersService.remove(id);
+    res.status(200).json('user removed sucessfully')
   }
 }

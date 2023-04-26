@@ -1,20 +1,22 @@
-import { Injectable, NotFoundException, Res } from '@nestjs/common';
+import { Injectable, NotFoundException, Res, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from 'src/users/schema/user.schema';
 import { Model } from 'mongoose';
-import { Response } from 'express';
-
+import  amqp from 'amqplib'
 import axios from 'axios';
+import 'dotenv/config'
 
 @Injectable()
 export class UsersService {
 
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  async create(user: CreateUserDto): Promise<User> {
-    const createUser = await this.userModel.create(user)
+  async create(dto: CreateUserDto): Promise<User> {
+    const user = await this.userModel.findOne({ id: dto.id })
+    if(user) throw new BadRequestException('id already exists')
+    const createUser = await this.userModel.create(dto)
     return createUser.save()
   }
 
@@ -47,8 +49,6 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    const user = await this.userModel.deleteOne({id: id})
-    if(!user) throw new NotFoundException('user can not found to update')
-    return 'User removed sucessfully'
+    await this.userModel.deleteOne({id: id})
   }
 }

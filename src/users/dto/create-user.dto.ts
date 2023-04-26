@@ -26,7 +26,7 @@ export class CreateUserDto {
    @IsString()
    @IsEmail()
    @IsNotEmpty({
-    message: 'The job field must be filled in.'
+    message: 'The email field must be filled in.'
    })
     email: string
 
