@@ -6,13 +6,13 @@ import 'dotenv/config'
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.mailgun.org',
+        host: 'smtp.gmail.com',
         port: 587,
         ignoreTLS: false,
         secure: false,
         auth: {
-          user: process.env.USERNAME_MAILGUNL,
-          pass: process.env.PASSWORD_MAILGUN,
+          user: process.env.EMAIL_GMAIL,
+          pass: process.env.PASSWORD_GMAIL,
         },
       },
     })

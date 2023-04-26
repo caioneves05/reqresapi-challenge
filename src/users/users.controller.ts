@@ -7,14 +7,13 @@ import { Controller,
   Param, 
   Delete, 
   Res,
-  Inject
+  Put
  } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 
-import { emailService } from 'src/sendEMail/sendemail.service';
 import { MailerService } from '@nestjs-modules/mailer';
 
 
@@ -32,26 +31,32 @@ export class UsersController {
       subject: 'Sending Email with NestJS.',
       html: 'Test completed successfully.',
     })
+    
     res.json({sendEmailUser: `${user.email}`})
   }
 
   @Get()
   findAll() {
-    return this.usersService.findAll();
+    return this.usersService.findAllDb()
+  }
+
+  @Get('api/')
+  findAllApi() {
+    return this.usersService.findAllApi();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  findOneDb(@Param('id') id: string) {
+    return this.usersService.findOneDb(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.updateDb(id, updateUserDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.usersService.remove(id);
   }
 }

@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, Res } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from 'src/users/schema/user.schema';
 import { Model } from 'mongoose';
+import { Response } from 'express';
 
 import axios from 'axios';
 
@@ -17,20 +18,37 @@ export class UsersService {
     return createUser.save()
   }
 
-  async findAll() {
+  async findAllApi() {
     const result = await axios.get('https://reqres.in/api/users')
     return await result.data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findAllDb() {
+    const result = await this.userModel.find()
+    return result
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findOneDb(id: string) {
+    const user = await this.userModel.findOne({ id : id })
+    if(!user) throw new NotFoundException('User not exists.')
+    return user
+    
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async updateDb(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userModel.findOne({ id : id})
+    if(!user) throw new NotFoundException('user can not found to update')
+    else{
+      await this.userModel.updateOne({id: id},  updateUserDto)
+      await user.save()
+      return updateUserDto
+    }
+    
+  }
+
+  async remove(id: string) {
+    const user = await this.userModel.deleteOne({id: id})
+    if(!user) throw new NotFoundException('user can not found to update')
+    return 'User removed sucessfully'
   }
 }
