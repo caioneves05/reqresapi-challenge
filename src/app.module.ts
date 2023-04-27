@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import 'dotenv/config'
 import { sendEmailModule } from './sendEMail/sendemail.module';
 import { ConfigModule } from '@nestjs/config';
+import { rabbitModule } from './RabbitMQ/rabbit.module';
 
 
 const MONGO_URI = process.env.MONGO_URI
@@ -15,7 +16,8 @@ const MONGO_URI = process.env.MONGO_URI
     MongooseModule.forRoot(MONGO_URI), 
     UsersModule,
     sendEmailModule,
-    ConfigModule.forRoot()
+    ConfigModule.forRoot(),
+    rabbitModule
   ],
   controllers: [AppController],
   providers: [AppService],

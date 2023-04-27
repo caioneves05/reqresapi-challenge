@@ -1,12 +1,11 @@
-import { Injectable, NotFoundException, Res, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from 'src/users/schema/user.schema';
 import { Model } from 'mongoose';
-import  amqp from 'amqplib'
 import axios from 'axios';
-import 'dotenv/config'
+import 'dotenv/config';
 
 @Injectable()
 export class UsersService {
