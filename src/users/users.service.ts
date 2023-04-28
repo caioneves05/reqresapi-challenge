@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -6,16 +6,18 @@ import { User } from 'src/users/schema/user.schema';
 import { Model } from 'mongoose';
 import axios from 'axios';
 import 'dotenv/config';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class UsersService {
 
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>,@Inject('RMQ_CONNECTION') private client: ClientProxy) {}
 
   async create(dto: CreateUserDto): Promise<User> {
     const user = await this.userModel.findOne({ id: dto.id })
     if(user) throw new BadRequestException('id already exists')
     const createUser = await this.userModel.create(dto)
+    await this.client.emit( "LOG:USER CREATED ",user )
     return createUser.save()
   }
 

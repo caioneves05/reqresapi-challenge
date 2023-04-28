@@ -6,20 +6,20 @@ import { Controller,
   Param, 
   Delete, 
   Res,
-  Put
+  Put,
  } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-
+import { RMQService } from 'src/rmqMessenger/rmq.service';
 import { MailerService } from '@nestjs-modules/mailer';
 
 
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService,private readonly mailService: MailerService) {}
+  constructor(private readonly usersService: UsersService,private readonly mailService: MailerService, private readonly rmqService: RMQService) {}
 
   @Post()
   async create(@Body() userCreate: CreateUserDto, @Res() res: Response) {
@@ -30,6 +30,8 @@ export class UsersController {
       subject: 'Sending Email with NestJS.',
       html: 'Test completed successfully.',
     })
+    // RabbitMQ queue message.
+    await this.rmqService.sendMessage('user created sucessfully.')
     
     res.json({sendEmailUser: user.email})
   }
