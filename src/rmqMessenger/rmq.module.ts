@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
-import { RMQService } from './rmq.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { RmqService } from './rmq.service';
+
 import 'dotenv/config'
 
 
 @Module({
-    imports: [
-    
-    ],
-    controllers: [],
-    providers: [RMQService]
+    imports: [],
+    providers: [ RmqService ],
+    exports: [ RmqService ]
 })
 
-export class RMQModule {}
+export class RmqModule {}

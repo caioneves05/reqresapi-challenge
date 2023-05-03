@@ -15,7 +15,7 @@ import 'dotenv/config'
           pass: process.env.PASSWORD_GMAIL,
         },
       },
-    })
+    }), 
   ]
 })
 export class sendEmailModule {}

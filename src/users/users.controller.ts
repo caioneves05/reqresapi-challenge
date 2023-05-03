@@ -12,27 +12,18 @@ import { Controller,
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { RMQService } from 'src/rmqMessenger/rmq.service';
-import { MailerService } from '@nestjs-modules/mailer';
+import { EmailService } from 'src/sendEMail/sendemail.service';
 
 
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService,private readonly mailService: MailerService, private readonly rmqService: RMQService) {}
+  constructor(private readonly usersService: UsersService, private readonly emailservice: EmailService) {}
 
   @Post()
   async create(@Body() userCreate: CreateUserDto, @Res() res: Response) {
     const user = await this.usersService.create(userCreate)
-    await this.mailService.sendMail({
-      to: user.email,
-      from: 'Caio Neves test',
-      subject: 'Sending Email with NestJS.',
-      html: 'Test completed successfully.',
-    })
-    // RabbitMQ queue message.
-    await this.rmqService.sendMessage('user created sucessfully.')
-    
+    await this.emailservice.sendEmailSMTP(user.email)
     res.json({sendEmailUser: user.email})
   }
 
