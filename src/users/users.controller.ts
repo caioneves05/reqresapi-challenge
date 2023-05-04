@@ -13,6 +13,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EmailService } from 'src/sendEMail/sendemail.service';
+import { addUserDTO } from './dto/add-avatar.dto';
 
 
 
@@ -46,10 +47,16 @@ export class UsersController {
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.updateDb(id, updateUserDto);
   }
+  //Implementar depois a validação de addAvatar para o mongoDb. 
+  @Put('avatar/:id')
+  addAvatar(@Param('id') id: string, @Body() body: addUserDTO, res: Response) {
+    this.usersService.addAvatar(id, body)
+    return 'Avatar added in user.'
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string, res: Response ) {
     this.usersService.remove(id);
-    res.status(200).json('user removed sucessfully')
+    return 'user removed sucessfully'
   }
 }

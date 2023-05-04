@@ -1,4 +1,4 @@
-import {  MinLength, IsNotEmpty, IsString, IsEmail, IsNumber } from 'class-validator'
+import {  MinLength, IsNotEmpty, IsString, IsEmail, IsNumber, IsOptional } from 'class-validator'
 
 export class CreateUserDto {
 
@@ -29,5 +29,9 @@ export class CreateUserDto {
     message: 'The email field must be filled in.'
    })
     email: string
+
+   @IsOptional()
+   @IsString()
+    avatar: string
 
 }

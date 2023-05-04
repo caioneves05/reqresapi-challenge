@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { addUserDTO } from './dto/add-avatar.dto';
 
 import { User } from 'src/users/schema/user.schema';
 import { Model } from 'mongoose';
@@ -14,6 +15,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import 'dotenv/config';
 
 
+
 @Injectable()
 export class UsersService {
 
@@ -21,9 +23,9 @@ export class UsersService {
 
   async create(dto: CreateUserDto): Promise<User> {
     
-    const user = await this.userModel.findOne({ id: dto.id })
+    const userId = await this.userModel.findOne({ id: dto.id })
     
-    if(user) throw new BadRequestException('id already exists')
+    if(userId) throw new BadRequestException('id already exists')
     
     const createUser = await this.userModel.create(dto)
     await this.client.emit('teste',`USER CREATED: ${createUser}`)
@@ -61,5 +63,15 @@ export class UsersService {
 
   async remove(id: string) {
     await this.userModel.deleteOne({id: id})
+  }
+
+  async addAvatar(id : string, body: addUserDTO) {
+    const { avatar } = body
+    const user = await this.userModel.updateOne(
+      { id: id },
+      {$set: {avatar: avatar}}
+    )
+
+    if(!user) throw new NotFoundException('user can not found to update')
   }
 }
