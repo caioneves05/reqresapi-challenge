@@ -9,6 +9,8 @@ import { User } from 'src/users/schema/user.schema';
 import { Model } from 'mongoose';
 
 import axios from 'axios';
+import https from 'https'
+import  fs  from 'fs'
 
 import { ClientProxy } from '@nestjs/microservices';
 
@@ -61,17 +63,57 @@ export class UsersService {
     
   }
 
-  async remove(id: string) {
-    await this.userModel.deleteOne({id: id})
-  }
-
-  async addAvatar(id : string, body: addUserDTO) {
-    const { avatar } = body
+  async addAvatarDb(id : string, Url: addUserDTO) {
+    const { avatar } = Url
     const user = await this.userModel.updateOne(
       { id: id },
       {$set: {avatar: avatar}}
     )
 
     if(!user) throw new NotFoundException('user can not found to update')
+  }
+
+  async removeUser(id: string) {
+    await this.userModel.deleteOne({id: id})
+  }
+
+  async avatarDownload(url, uuid) {
+
+    const path = `../assets/${uuid}.jpg`
+
+    const response = await new Promise((resolve, reject) => {
+      https.get(url, function(response) {
+        resolve(response)
+      }).on('error', function(error) {
+        reject(error)
+      })
+    })
+
+    const fileStream = fs.createWriteStream(path)
+
+    return new Promise((resolve, reject) => {
+      response.on('data', function(chunk) {
+        try {
+          fileStream.write(chunk);
+        } catch (error) {
+          reject(error);
+        }
+      });
+  
+      response.on('end', function() {
+        try {
+          fileStream.end();
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      });
+  
+      response.on('error', function(error) {
+        reject(error);
+      });
+    });
+
+
   }
 }
