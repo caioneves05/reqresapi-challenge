@@ -8,13 +8,17 @@ import { addUserDTO } from './dto/add-avatar.dto';
 import { User } from 'src/users/schema/user.schema';
 import { Model } from 'mongoose';
 
-import axios from 'axios';
-import https from 'https'
-import  fs  from 'fs'
+import request from 'request'
+import { pipeline } from 'stream';
+import axios from 'axios'
+import * as https from 'http'
+import * as fs from 'fs'
 
 import { ClientProxy } from '@nestjs/microservices';
 
 import 'dotenv/config';
+import { resolve } from 'path';
+import { response } from 'express';
 
 
 
@@ -77,43 +81,23 @@ export class UsersService {
     await this.userModel.deleteOne({id: id})
   }
 
-  async avatarDownload(url, uuid) {
+  async avatarDownload(url): Promise<void> {
+    
+    return new Promise((resolve, reject) => {
+      const path = `src/users/assets/teste.jpg`;
+      const file = fs.createWriteStream(path)
 
-    const path = `../assets/${uuid}.jpg`
-
-    const response = await new Promise((resolve, reject) => {
-      https.get(url, function(response) {
-        resolve(response)
-      }).on('error', function(error) {
-        reject(error)
+      https.get(url, (response) => {
+        response.pipe(file)
+        file.on('finish', () => {
+          file.close()
+          resolve()
+        })
+      }).on('error', (err) => {
+        fs.unlink(path, () => {
+          reject(err)
+        })
       })
     })
-
-    const fileStream = fs.createWriteStream(path)
-
-    return new Promise((resolve, reject) => {
-      response.on('data', function(chunk) {
-        try {
-          fileStream.write(chunk);
-        } catch (error) {
-          reject(error);
-        }
-      });
-  
-      response.on('end', function() {
-        try {
-          fileStream.end();
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      });
-  
-      response.on('error', function(error) {
-        reject(error);
-      });
-    });
-
-
   }
 }

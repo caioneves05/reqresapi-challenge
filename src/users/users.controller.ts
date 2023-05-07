@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { v4 } from 'uuid'
 
 import { Controller, 
   Get, 
@@ -51,9 +52,15 @@ export class UsersController {
   }
   //Implementar depois a validação de addAvatar para o mongoDb. 
   @Put('avatar/:id')
-  addAvatarDb(@Param('id') id: string, @Body() Url: addUserDTO, res: Response) {
-    this.usersService.addAvatarDb(id, Url)
-    this.usersService.avatarDownload(Url, './assets')
+  addAvatarDb(@Param('id') id: string, @Body() url: addUserDTO, res: Response) {
+    const uuid = v4()
+    this.usersService.addAvatarDb(id, url)
+    try{
+      this.usersService.avatarDownload(url)
+    } 
+    catch(err) {
+      console.log(err)
+    }
     return 'Avatar added in user.'
   }
 
@@ -62,8 +69,5 @@ export class UsersController {
     this.usersService.removeUser(id);
     return 'user removed sucessfully'
   }
-
-
-
 
 }
