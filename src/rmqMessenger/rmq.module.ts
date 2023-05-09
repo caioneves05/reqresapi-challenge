@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
-import { RmqService } from './rmq.service';
+import { Module } from '@nestjs/common'
+import { RmqService } from './rmq.service'
 
 import 'dotenv/config'
 

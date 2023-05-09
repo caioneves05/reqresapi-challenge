@@ -1,25 +1,18 @@
-import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
+import { ClientProxy } from '@nestjs/microservices'
 
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
-import { addUserDTO } from './dto/add-avatar.dto';
+import { UpdateUserDto } from './dto/update-user.dto'
+import { CreateUserDto } from './dto/create-user.dto'
+import { addUserDTO } from './dto/add-avatar.dto'
 
-import { User } from 'src/users/schema/user.schema';
-import { Model } from 'mongoose';
+import { User } from 'src/users/schema/user.schema'
+import { Model } from 'mongoose'
 
-import request from 'request'
-import { pipeline } from 'stream';
-import axios from 'axios'
-import * as https from 'http'
 import * as fs from 'fs'
-
-import { ClientProxy } from '@nestjs/microservices';
-
-import 'dotenv/config';
-import { resolve } from 'path';
-import { response } from 'express';
-
+import axios from 'axios'
+import * as CryptoJS from 'crypto-js'
+import 'dotenv/config'
 
 
 @Injectable()
@@ -41,7 +34,7 @@ export class UsersService {
 
   async findAllApi() {
     const result = await axios.get('https://reqres.in/api/users')
-    return await result.data;
+    return await result.data
   }
 
   async findAllDb() {
@@ -81,23 +74,33 @@ export class UsersService {
     await this.userModel.deleteOne({id: id})
   }
 
-  async avatarDownload(url): Promise<void> {
-    
-    return new Promise((resolve, reject) => {
-      const path = `src/users/assets/teste.jpg`;
-      const file = fs.createWriteStream(path)
+  async fileNameHashed(id: string) {
+    const user = await this.userModel.findOne({ id : id })
+    const fileName = user.first_name + user.last_name
 
-      https.get(url, (response) => {
-        response.pipe(file)
-        file.on('finish', () => {
-          file.close()
-          resolve()
-        })
-      }).on('error', (err) => {
-        fs.unlink(path, () => {
-          reject(err)
-        })
-      })
-    })
+    const hash = CryptoJS.SHA256(fileName)
+    
+    return hash.toString(CryptoJS.enc.Hex) 
   }
-}
+
+  async avatarDownload(url, idUser): Promise<void> {
+    const path = ('assets/')  
+    const fileName = await this.fileNameHashed(idUser)
+    console.log(fileName)
+
+    try {
+      const response = await axios({
+        method: 'get',
+        url: url,
+        responseType: 'arraybuffer',
+      })
+      const buffer = Buffer.from(response.data, 'binary')
+      return await fs.promises.writeFile(path + `${fileName}.jpg`, buffer)
+    }
+    catch(err) {
+      return err
+    }
+  }
+
+  
+}  

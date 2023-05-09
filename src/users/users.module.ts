@@ -1,15 +1,15 @@
-import { Module } from '@nestjs/common';
+import { Module } from '@nestjs/common'
 
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
+import { UsersService } from './users.service'
+import { UsersController } from './users.controller'
 import { UserSchema, User } from 'src/users/schema/user.schema'
 
-import { MongooseModule } from '@nestjs/mongoose';
+import { MongooseModule } from '@nestjs/mongoose'
 
-import { sendEmailModule } from 'src/sendEMail/sendemail.module';
-import { EmailService } from 'src/sendEMail/sendemail.service';
+import { sendEmailModule } from 'src/sendEMail/sendemail.module'
+import { EmailService } from 'src/sendEMail/sendemail.service'
 
-import { ClientsModule,Transport } from '@nestjs/microservices';
+import { ClientsModule,Transport } from '@nestjs/microservices'
 
 import 'dotenv/config'
 

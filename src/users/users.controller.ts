@@ -1,5 +1,4 @@
-import { Response } from 'express';
-import { v4 } from 'uuid'
+import { Response } from 'express'
 
 import { Controller, 
   Get, 
@@ -9,14 +8,14 @@ import { Controller,
   Delete, 
   Res,
   Put,
- } from '@nestjs/common';
+ } from '@nestjs/common'
 
-import { UsersService } from './users.service';
-import { EmailService } from 'src/sendEMail/sendemail.service';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersService } from './users.service'
+import { EmailService } from 'src/sendEMail/sendemail.service'
+import { UpdateUserDto } from './dto/update-user.dto'
 
-import { CreateUserDto } from './dto/create-user.dto';
-import { addUserDTO } from './dto/add-avatar.dto';
+import { CreateUserDto } from './dto/create-user.dto'
+import { addUserDTO } from './dto/add-avatar.dto'
 
 
 
@@ -38,35 +37,29 @@ export class UsersController {
 
   @Get('api/')
   findAllApi() {
-    return this.usersService.findAllApi();
+    return this.usersService.findAllApi()
   }
 
   @Get(':id')
   findOneDb(@Param('id') id: string) {
-    return this.usersService.findOneDb(id);
+    return this.usersService.findOneDb(id)
   }
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.updateDb(id, updateUserDto);
+    return this.usersService.updateDb(id, updateUserDto)
   }
-  //Implementar depois a validação de addAvatar para o mongoDb. 
+  // Then implement addAvatar validation for mongoDb. 
   @Put('avatar/:id')
-  addAvatarDb(@Param('id') id: string, @Body() url: addUserDTO, res: Response) {
-    const uuid = v4()
+  async addAvatarDb(@Param('id') id: string, @Body() url: addUserDTO, res: Response) {
     this.usersService.addAvatarDb(id, url)
-    try{
-      this.usersService.avatarDownload(url)
-    } 
-    catch(err) {
-      console.log(err)
-    }
+    await this.usersService.avatarDownload(url.avatar, id)
     return 'Avatar added in user.'
   }
 
   @Delete(':id')
   removeUser(@Param('id') id: string, res: Response ) {
-    this.usersService.removeUser(id);
+    this.usersService.removeUser(id)
     return 'user removed sucessfully'
   }
 

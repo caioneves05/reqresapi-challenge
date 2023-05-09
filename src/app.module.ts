@@ -1,12 +1,12 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { MongooseModule } from '@nestjs/mongoose';
+import { Module } from '@nestjs/common'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { UsersModule } from './users/users.module'
+import { MongooseModule } from '@nestjs/mongoose'
 import 'dotenv/config'
-import { sendEmailModule } from './sendEMail/sendemail.module';
-import { ConfigModule } from '@nestjs/config';
-import { RmqModule } from './rmqMessenger/rmq.module';
+import { sendEmailModule } from './sendEMail/sendemail.module'
+import { ConfigModule } from '@nestjs/config'
+import { RmqModule } from './rmqMessenger/rmq.module'
 
 
 const MONGO_URI = process.env.MONGO_URI

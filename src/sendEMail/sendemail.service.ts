@@ -1,5 +1,5 @@
-import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable } from '@nestjs/common';
+import { MailerService } from '@nestjs-modules/mailer'
+import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class EmailService {
@@ -11,6 +11,6 @@ export class EmailService {
       from: 'Caio Neves test',
       subject: 'Sending Email with NestJS.',
       html: 'Test completed successfully.',
-    });
+    })
   }
 }
