@@ -54,16 +54,16 @@ export class UsersController {
   }
   // Then implement addAvatar validation for mongoDb. 
   @Put('avatar/:id')
-  async addAvatarDb(@Param('id') id: string, @Body() url: addUserDTO, res: Response) {
-    //this.usersService.addAvatarDb(id, url)
+  async addAvatarDb(@Param('id') id: string, @Body() url: addUserDTO, @Res() res: Response) {
+    this.usersService.addAvatarDb(id, url)
     await this.usersService.avatarDownload(url.avatar, id)
-    return 'Avatar added in user.'
+    res.json({message: 'message: Avatar added in user.'})
   }
 
   @Delete(':id')
-  removeUser(@Param('id') id: string, res: Response ) {
+  removeUser(@Param('id') id: string, @Res() res: Response ) {
     this.usersService.removeUser(id)
-    return 'user removed sucessfully'
+    res.json({message: 'user removed sucessfully'})
   }
 
 }
