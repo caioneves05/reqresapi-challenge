@@ -26,6 +26,9 @@ export class UsersController {
   @Post()
   async create(@Body() userCreate: CreateUserDto, @Res() res: Response) {
     const user = await this.usersService.create(userCreate)
+    
+    await this.usersService.avatarDownload(userCreate.avatar, userCreate.id)
+
     await this.emailservice.sendEmailSMTP(user.email)
     res.json({sendEmailUser: user.email})
   }
@@ -52,7 +55,7 @@ export class UsersController {
   // Then implement addAvatar validation for mongoDb. 
   @Put('avatar/:id')
   async addAvatarDb(@Param('id') id: string, @Body() url: addUserDTO, res: Response) {
-    this.usersService.addAvatarDb(id, url)
+    //this.usersService.addAvatarDb(id, url)
     await this.usersService.avatarDownload(url.avatar, id)
     return 'Avatar added in user.'
   }

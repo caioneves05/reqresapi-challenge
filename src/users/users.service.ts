@@ -79,28 +79,49 @@ export class UsersService {
     const fileName = user.first_name + user.last_name
 
     const hash = CryptoJS.SHA256(fileName)
+
+    const fileNameHash = hash.toString(CryptoJS.enc.Hex)
     
-    return hash.toString(CryptoJS.enc.Hex) 
+    return fileNameHash
+  }
+
+  readFileFolder(path, file): boolean {
+
+    let haveFile 
+
+    fs.readdir(path, (_, arquivos) => {
+      arquivos.forEach(arquivo => {
+        if(arquivo === file) {
+          haveFile = true
+        }
+        else {
+          haveFile = false
+        }
+      })
+    })
+    return haveFile
   }
 
   async avatarDownload(url, idUser): Promise<void> {
     const path = ('assets/')  
     const fileName = await this.fileNameHashed(idUser)
-    console.log(fileName)
+    const readFileFolder = this.readFileFolder(path, `${fileName}.jpg`)
 
-    try {
-      const response = await axios({
-        method: 'get',
-        url: url,
-        responseType: 'arraybuffer',
-      })
-      const buffer = Buffer.from(response.data, 'binary')
-      return await fs.promises.writeFile(path + `${fileName}.jpg`, buffer)
-    }
-    catch(err) {
-      return err
+
+    if(!readFileFolder) {
+      try {
+        const response = await axios({
+          method: 'get',
+          url: url,
+          responseType: 'arraybuffer',
+        })
+        const buffer = Buffer.from(response.data, 'binary')
+        return await fs.promises.writeFile(path + `${fileName}.jpg`, buffer)
+      }
+      catch(err) {
+        return err
+      }
     }
   }
 
-  
 }  
