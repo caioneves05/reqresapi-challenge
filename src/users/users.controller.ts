@@ -38,11 +38,6 @@ export class UsersController {
     return this.usersService.findAllDb()
   }
 
-  @Get('api/')
-  findAllApi() {
-    return this.usersService.findAllApi()
-  }
-
   @Get(':id')
   findOneDb(@Param('id') id: string) {
     return this.usersService.findOneDb(id)

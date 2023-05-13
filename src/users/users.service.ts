@@ -31,12 +31,7 @@ export class UsersService {
     
     return createUser.save()
   }
-
-  async findAllApi() {
-    const result = await axios.get('https://reqres.in/api/users')
-    return await result.data
-  }
-
+  
   async findAllDb() {
     const result = await this.userModel.find()
     return result
