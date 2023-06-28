@@ -16,6 +16,9 @@ export class User {
     last_name: string
 
     @Prop({required: true})
+    password: string
+
+    @Prop({required: true})
     email: string
     
     @Prop({})

@@ -25,7 +25,7 @@ export class UsersController {
 
   @Post()
   async create(@Body() userCreate: CreateUserDto, @Res() res: Response) {
-    const user = await this.usersService.create(userCreate)
+    const user = await this.usersService.createUser(userCreate)
     
     await this.usersService.avatarDownload(userCreate.avatar, userCreate.id)
 

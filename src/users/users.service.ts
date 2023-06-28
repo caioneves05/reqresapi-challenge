@@ -12,6 +12,7 @@ import { Model } from 'mongoose'
 import * as fs from 'fs'
 import axios from 'axios'
 import * as CryptoJS from 'crypto-js'
+import { v4 } from 'uuid'
 import 'dotenv/config'
 
 
@@ -20,8 +21,8 @@ export class UsersService {
 
   constructor(@InjectModel(User.name) private userModel: Model<User>, @Inject('RMQ_CONNECTION') private client: ClientProxy) {}
 
-  async create(dto: CreateUserDto): Promise<User> {
-    
+  async createUser(dto: CreateUserDto): Promise<User> {
+    dto.password = v4(dto.password)
     const userId = await this.userModel.findOne({ id: dto.id })
     
     if(userId) throw new BadRequestException('id already exists')

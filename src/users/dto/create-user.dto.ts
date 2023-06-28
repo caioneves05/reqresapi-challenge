@@ -24,6 +24,13 @@ export class CreateUserDto {
    last_name: string
 
    @IsString()
+   @MinLength(8, {
+    message: 'The password must have at least 8 characters.'
+   })
+   @IsNotEmpty()
+   password: string
+
+   @IsString()
    @IsEmail()
    @IsNotEmpty({
     message: 'The email field must be filled in.'
