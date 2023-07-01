@@ -8,6 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 
 import { sendEmailModule } from 'src/sendEMail/sendemail.module'
 import { EmailService } from 'src/sendEMail/sendemail.service'
+import { JwtService } from 'src/jwt/jwt.service'
 
 import { ClientsModule,Transport } from '@nestjs/microservices'
 
@@ -31,6 +32,6 @@ import 'dotenv/config'
   }])
   ],
   controllers: [UsersController],
-  providers: [UsersService, EmailService]
+  providers: [UsersService, EmailService, JwtService]
 })
 export class UsersModule {}
