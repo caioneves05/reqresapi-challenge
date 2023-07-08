@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, BadRequestException, Inject } from '@nes
 import { InjectModel } from '@nestjs/mongoose'
 import { ClientProxy } from '@nestjs/microservices'
 
-import { UpdateUserDto } from './dto/update-user.dto'
+import { UserDto } from './dto/user.dto'
 import { CreateUserDto } from './dto/create-user.dto'
 import { addUserDTO } from './dto/add-avatar.dto'
 
@@ -13,25 +13,26 @@ import * as fs from 'fs'
 import axios from 'axios'
 import * as CryptoJS from 'crypto-js'
 import 'dotenv/config'
+import { JwtService } from 'src/jwt/jwt.service'
 
 
 @Injectable()
 export class UsersService {
 
-  constructor(@InjectModel(User.name) private userModel: Model<User>, @Inject('RMQ_CONNECTION') private client: ClientProxy) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>, @Inject('RMQ_CONNECTION') private client: ClientProxy, private jwt: JwtService) { }
 
   async createUser(dto: CreateUserDto): Promise<User> {
     dto.password = CryptoJS.SHA256(dto.password)
     const userId = await this.userModel.findOne({ id: dto.id })
-    
-    if(userId) throw new BadRequestException('id already exists')
-    
+
+    if (userId) throw new BadRequestException('id already exists')
+
     const createUser = await this.userModel.create(dto)
-    await this.client.emit('teste',`USER CREATED: ${createUser}`)
-    
+    await this.client.emit('teste', `USER CREATED: ${createUser}`)
+
     return createUser.save()
   }
-  
+
   /*
   async findAllDb() {
     const result = await this.userModel.find()
@@ -39,59 +40,58 @@ export class UsersService {
   }
   */
 
-  async findOneDb(email: string, password: string) {
+  async findUserDb(emailUser: string, passwordUser: string) {
+    const user = await this.userModel.findOne({ email: emailUser, password: passwordUser })
 
-    if(!email && !password) return 'Parameters Email and Password is not defined'
-    const user = await this.userModel.findOne({ email : email, password: password })
+    if (!user) throw new NotFoundException('User not exists.')
     
-    if(!user) throw new NotFoundException('User not exists.')
-    
-    return user
+    const token = this.jwt.createToken(user.email, user.id)
+    return token
   }
 
-  async updateDb(id: string, updateUserDto: UpdateUserDto) {
-    const user = await this.userModel.findOne({ id : id})
-    if(!user) throw new NotFoundException('user can not found to update')
-    else{
-      await this.userModel.updateOne({id: id},  updateUserDto)
+  async updateDb(id: string, updateUserDto: UserDto) {
+    const user = await this.userModel.findOne({ id: id })
+    if (!user) throw new NotFoundException('user can not found to update')
+    else {
+      await this.userModel.updateOne({ id: id }, updateUserDto)
       await user.save()
       return updateUserDto
     }
-    
+
   }
 
-  async addAvatarDb(id : string, Url: addUserDTO) {
+  async addAvatarDb(id: string, Url: addUserDTO) {
     const { avatar } = Url
     const user = await this.userModel.updateOne(
       { id: id },
-      {$set: {avatar: avatar}}
+      { $set: { avatar: avatar } }
     )
 
-    if(!user) throw new NotFoundException('user can not found to update')
+    if (!user) throw new NotFoundException('user can not found to update')
   }
 
   async removeUser(id: string) {
-    await this.userModel.deleteOne({id: id})
+    await this.userModel.deleteOne({ id: id })
   }
 
   async fileNameHashed(id: string) {
-    const user = await this.userModel.findOne({ id : id })
+    const user = await this.userModel.findOne({ id: id })
     const fileName = user.first_name + user.last_name
 
     const hash = CryptoJS.SHA256(fileName)
 
     const fileNameHash = hash.toString(CryptoJS.enc.Hex)
-    
+
     return fileNameHash
   }
 
   readFileFolder(path, file): boolean {
 
-    let haveFile 
+    let haveFile
 
     fs.readdir(path, (_, arquivos) => {
       arquivos.forEach(arquivo => {
-        if(arquivo === file) {
+        if (arquivo === file) {
           haveFile = true
         }
         else {
@@ -103,12 +103,12 @@ export class UsersService {
   }
 
   async avatarDownload(url, idUser): Promise<void> {
-    const path = ('assets/')  
+    const path = ('assets/')
     const fileName = await this.fileNameHashed(idUser)
     const readFileFolder = this.readFileFolder(path, `${fileName}.jpg`)
 
 
-    if(!readFileFolder) {
+    if (!readFileFolder) {
       try {
         const response = await axios({
           method: 'get',
@@ -118,7 +118,7 @@ export class UsersService {
         const buffer = Buffer.from(response.data, 'binary')
         return await fs.promises.writeFile(path + `${fileName}.jpg`, buffer)
       }
-      catch(err) {
+      catch (err) {
         return err
       }
     }

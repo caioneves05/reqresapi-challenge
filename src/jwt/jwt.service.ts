@@ -6,14 +6,14 @@ import { Request, Response } from "express";
 @Injectable()
 export class JwtService {
 
-    protected validationKey(keySecret: string): string | Error {
+    validationKey(keySecret: string): string | Error {
         if(!keySecret) {
             throw new Error('Secret Key is not defined!')
         }
         return keySecret
     }
 
-    protected createToken(email: string, id: string): string | Error {
+    createToken(email: string, id: string): string | Error {
 
         const key = process.env.PHRASE_JWT
 
@@ -26,7 +26,7 @@ export class JwtService {
         return token
     }
 
-    protected async validateSession(req: Request, res: Response) {
+    async validateSession(req: Request, res: Response) {
         const headerAut = await req.headers.authorization
 
         if(!headerAut) {

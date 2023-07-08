@@ -3,7 +3,7 @@ import { CreateUserDto } from './create-user.dto'
 import { IsEmail, IsNotEmpty, IsNumber, IsString, MinLength } from 'class-validator'
 
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {
+export class UserDto extends PartialType(CreateUserDto) {
     
     @IsNumber()
     id: number
@@ -18,6 +18,9 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     
     @IsString()
     @IsEmail()
+    @IsNotEmpty({
+        message: 'The password field must be filled in'
+    })
     email: string
     
     @IsString()
