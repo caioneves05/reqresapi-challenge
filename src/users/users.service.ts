@@ -13,13 +13,13 @@ import * as fs from 'fs'
 import axios from 'axios'
 import * as CryptoJS from 'crypto-js'
 import 'dotenv/config'
-import { JwtService } from 'src/jwt/jwt.service'
+import { AuthService } from 'src/auth/auth.service'
 
 
 @Injectable()
 export class UsersService {
 
-  constructor(@InjectModel(User.name) private userModel: Model<User>, @Inject('RMQ_CONNECTION') private client: ClientProxy, private jwt: JwtService) { }
+  constructor(@InjectModel(User.name) private userModel: Model<User>, @Inject('RMQ_CONNECTION') private client: ClientProxy, private jwt: AuthService) { }
 
   async createUser(dto: CreateUserDto): Promise<User> {
     dto.password = CryptoJS.SHA256(dto.password)
@@ -42,11 +42,7 @@ export class UsersService {
 
   async findUserDb(emailUser: string, passwordUser: string) {
     const user = await this.userModel.findOne({ email: emailUser, password: passwordUser })
-
-    if (!user) throw new NotFoundException('User not exists.')
-    
-    const token = this.jwt.createToken(user.email, user.id)
-    return token
+    return user
   }
 
   async updateDb(id: string, updateUserDto: UserDto) {
