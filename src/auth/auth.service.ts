@@ -1,9 +1,6 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { Request, Response } from "express";
 import { UsersService } from "src/users/users.service";
 import { JwtService } from "@nestjs/jwt";
-
-import jwt from "jsonwebtoken";
 import * as CryptoJS from 'crypto-js'
 import 'dotenv/config'
 
@@ -12,26 +9,21 @@ export class AuthService {
 
     constructor(private readonly userService: UsersService, private jwtService: JwtService){}
 
-    validationKey(keySecret: string): string | Error {
+    validationKey(keySecret: string): string {
         if(!keySecret) {
             throw new Error('Secret Key is not defined!')
         }
         return keySecret
     }
 
-    async signIn(email: string, password: string): Promise<any> {
+    async signIn(email: string, password: string) {
         const user = await this.userService.findUserDb(email, password)
-        const passwrodHashed = CryptoJS.SHA256(user.password).toString(CryptoJS.enc.Hex)
 
-
-        if(user?.password !== passwrodHashed) {
-            throw new UnauthorizedException();
-        }
         const payload = {id: user.id, userName: user.first_name}
         return {
             acess_token: await this.jwtService.signAsync(payload)
         }     
-
+    
     }
     /*
     async validateSession(req: Request, res: Response) {

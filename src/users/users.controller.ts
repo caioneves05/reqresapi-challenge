@@ -14,7 +14,6 @@ import {
 
 import { UsersService } from './users.service'
 import { EmailService } from 'src/sendEMail/sendemail.service'
-import { AuthService } from 'src/auth/auth.service'
 
 import { UserDto } from './dto/user.dto'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -27,7 +26,6 @@ export class UsersController {
     constructor(
       private readonly usersService: UsersService,
       private readonly emailService: EmailService,
-      private readonly JwtService: AuthService
     ) { }
 
     @Post()
@@ -39,24 +37,7 @@ export class UsersController {
       //await this.emailService.sendEmailSMTP(user.email)
       res.json({ sendEmailUser: user.email })
     }
-
-    /*
-    @Get()
-    findAll() {
-      return this.usersService.findAllDb()
-    }
-    */
-
-    @Post('login')
-    findUserDb(@Body() bodyLoginUser: UserDto) {
-      if (!bodyLoginUser.email || !bodyLoginUser.password) throw new NotFoundException('Email and Password parameters are required to login.')
-
-      const password = CryptoJS.SHA256(bodyLoginUser.password)
-      const passwordHash = password.toString(CryptoJS.enc.Hex)
-      
-      return this.JwtService.signIn(bodyLoginUser.email, passwordHash)
-    }
-
+    
     @Put(':id')
     update(@Param('id') id: string, @Body() updateUserDto: UserDto) {
       return this.usersService.updateDb(id, updateUserDto)

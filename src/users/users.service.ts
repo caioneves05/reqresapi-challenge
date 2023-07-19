@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common'
+import { Injectable, NotFoundException, BadRequestException, Inject, UnauthorizedException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { ClientProxy } from '@nestjs/microservices'
 
@@ -13,13 +13,12 @@ import * as fs from 'fs'
 import axios from 'axios'
 import * as CryptoJS from 'crypto-js'
 import 'dotenv/config'
-import { AuthService } from 'src/auth/auth.service'
 
 
 @Injectable()
 export class UsersService {
 
-  constructor(@InjectModel(User.name) private userModel: Model<User>, @Inject('RMQ_CONNECTION') private client: ClientProxy, private jwt: AuthService) { }
+  constructor(@InjectModel(User.name) private userModel: Model<User>, @Inject('RMQ_CONNECTION') private client: ClientProxy) { }
 
   async createUser(dto: CreateUserDto): Promise<User> {
     dto.password = CryptoJS.SHA256(dto.password)
@@ -32,16 +31,13 @@ export class UsersService {
 
     return createUser.save()
   }
-
-  /*
-  async findAllDb() {
-    const result = await this.userModel.find()
-    return result
-  }
-  */
-
+  
   async findUserDb(emailUser: string, passwordUser: string) {
-    const user = await this.userModel.findOne({ email: emailUser, password: passwordUser })
+    const passwordHashed = CryptoJS.SHA256(passwordUser).toString(CryptoJS.enc.Hex)
+    
+    const user = await this.userModel.findOne({ email: emailUser, password: passwordHashed })
+    if(!user) throw new UnauthorizedException();
+
     return user
   }
 

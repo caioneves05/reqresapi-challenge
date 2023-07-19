@@ -7,12 +7,14 @@ import 'dotenv/config'
 import { sendEmailModule } from './sendEMail/sendemail.module'
 import { ConfigModule } from '@nestjs/config'
 import { RmqModule } from './rmqMessenger/rmq.module'
+import { AuthModule } from './auth/auth.module'
 
 
 const MONGO_URI = process.env.MONGO_URI
 
 @Module({
   imports: [
+    AuthModule,
     MongooseModule.forRoot(MONGO_URI), 
     UsersModule,
     sendEmailModule,

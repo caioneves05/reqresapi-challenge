@@ -8,13 +8,10 @@ import { MongooseModule } from '@nestjs/mongoose'
 
 import { sendEmailModule } from 'src/sendEMail/sendemail.module'
 import { EmailService } from 'src/sendEMail/sendemail.service'
-import { AuthService } from 'src/auth/auth.service'
 
 import { ClientsModule,Transport } from '@nestjs/microservices'
 
 import 'dotenv/config'
-import { AuthController } from 'src/auth/auth.controller'
-
 
 @Module({
   imports: [
@@ -32,7 +29,7 @@ import { AuthController } from 'src/auth/auth.controller'
       }
   }])
   ],
-  controllers: [UsersController, AuthController],
-  providers: [UsersService, EmailService, AuthService]
+  controllers: [UsersController],
+  providers: [UsersService, EmailService]
 })
 export class UsersModule {}
